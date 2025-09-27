@@ -1,0 +1,82 @@
+//我太菜了，连题目要求都看不懂，以下内容借助AI并作修改
+#include <stdio.h>
+#include <string.h>
+
+// 定义键值对结构体
+struct KeyValue {
+    char key[20];    // 键
+    char value[20];  // 值
+};
+
+int main() {
+    FILE* file;
+    char filename[] = "data.txt";
+    
+    // 存储键值对的数组
+    struct KeyValue data[100];
+    int count = 0; // 记录有多少个键值对
+    
+    // 1. 打开文件
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("can not open the file %s\n", filename);
+        return 1;
+    }
+    
+    // 2. 读取文件内容
+    char line[100]; // 存储每一行
+    while (fgets(line, sizeof(line), file) != NULL) {
+        char* colon = strchr(line, ':'); // 在行中找冒号
+        
+        if (colon != NULL) { // 如果找到冒号
+            // 分割键和值
+            *colon = '\0'; // 在冒号位置截断字符串
+            
+            // 键是冒号前面的部分
+            strcpy(data[count].key, line);
+            
+            // 值是冒号后面的部分（跳过冒号）
+            strcpy(data[count].value, colon + 1);
+            
+            // 去掉值末尾的换行符
+            data[count].value[strcspn(data[count].value, "\n")] = '\0';
+            
+            printf("we can read that: %s -> %s\n", data[count].key, data[count].value);
+            count++;
+        }
+    }
+    
+    fclose(file);
+    printf("succeeded！There are %d pairs of key and value\n\n", count);
+    
+    // 3. 处理用户查询
+    char input[20];
+    
+    printf("please enter the key（quir when you enter'Quit'）:\n");
+    
+    while (1) {
+        printf("> ");
+        scanf("%s", input);
+        
+        if (strcmp(input, "Quit") == 0) {
+            printf("quit\n");
+            break;
+        }
+        
+        // 在数据中查找
+        int found = 0;
+        for (int i = 0; i < count; i++) {
+            if (strcmp(data[i].key, input) == 0) {
+                printf("%s\n", data[i].value);
+                found = 1;
+                break;
+            }
+        }
+        
+        if (!found) {
+            printf("Error\n");
+        }
+    }
+    
+    return 0;
+}
